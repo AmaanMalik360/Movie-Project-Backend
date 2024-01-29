@@ -26,12 +26,10 @@ module.exports = (sequelize, DataTypes) => {
   FavouriteMovies.init({
     userId: {
       type: DataTypes.INTEGER,
-      // primaryKey: true,
       allowNull: false,
     },
     movieId: {
       type: DataTypes.INTEGER,
-      // primaryKey: true,
       allowNull: false,
     },
   }, {

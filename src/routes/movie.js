@@ -1,34 +1,15 @@
 const express = require('express');
-const { createMovie, editMovie, getAllMovies, toggleFavouriteMovie, getAllFavourites } = require('../controller/movie');
-const multer = require('multer')
-const path = require('path')
-const fs = require('fs');
-const { requireSignin } = require('../common middleware');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadPath = 'public/Images';
-        // Create the directory if it doesn't exist
-        fs.mkdirSync(uploadPath, { recursive: true });
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
-    }
-})        
-const upload = multer({
-    storage: storage
-})
+const { createMovie, editMovie, getAllMovies, toggleFavouriteMovie, getAllFavourites, deleteMovie } = require('../controllers/movie');
+const { requireSignin, checkPermissions } = require('../middlewares/authorization');
+const { uploadImage } = require('../middlewares/FileUpload');
+const { writePermission, editPermission, deletePermission } = require('../middlewares/Permissions');
 const router = express.Router()
 
-router.post('/create-movie', requireSignin, upload.single('file'), createMovie ); 
-
-router.patch('/edit-movie/:id', requireSignin, upload.single('file'), editMovie );
-
-router.get('/movies', requireSignin, getAllMovies)
-
-router.post('/toggle-favourite-movie', requireSignin, toggleFavouriteMovie);
-
-router.get('/user-favourites/:id', getAllFavourites);
+router.post('/', requireSignin, checkPermissions, writePermission, uploadImage.single('file'), createMovie ); 
+router.patch('/:id', requireSignin, checkPermissions, editPermission, uploadImage.single('file'), editMovie ); // id is movieId
+router.delete('/:movieId', requireSignin, checkPermissions, deletePermission, deleteMovie ); // id is movieId
+router.get('/', requireSignin, getAllMovies)
+router.post('/toggle-favourites', requireSignin, toggleFavouriteMovie);
+router.get('/favourites/:id', requireSignin, getAllFavourites); // id is userId
 
 module.exports = router

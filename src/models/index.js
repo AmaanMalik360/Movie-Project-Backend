@@ -14,9 +14,9 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(process.env.db_schema, process.env.db_username, process.env.db_password, {
+  sequelize = new Sequelize(process.env.DB_SCHEMA, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
     ...config,
-    host: process.env.db_host || config.host // Use process.env.db_host if available, otherwise fall back to config.host
+    host: process.env.DB_HOST || config.host // Use process.env.db_host if available, otherwise fall back to config.host
   });
 }
 
